@@ -1,27 +1,38 @@
-# HTML, CSS, JS (Auto Refresh)
+# Reactive Prompt using Signals
 
-This template is a starter for building a website with HTML, CSS and JS, powered by [Vite](https://vitejs.dev/). HTML provides the basic structure, CSS controls formatting, and JavaScript controls the behavior of different elements.
+I've been doing a lot of work on [Breadboard](https://github.com/breadboar-ai/breadboard). Breadboard is great because it changes the way you think about data flow through an LLM application by focusing on thinking about graphs. One of the things it does well is reacting to inputs updating and chaining of prompts. I wanted to see if I can make a simple imperative way to react to changing inputs.
 
-Hit run to see this project in action. It will auto-refresh as you edit the HTML, CSS and JS files.
+I thought it would be neat to experiment with:
 
-## Disable Auto Refresh
+1. Prompt resoponses should change as the inputs change.
+2. You should be able to chain responses easily, that is the output of one response can be used in another prompt.
 
-If you find the auto refresh getting in your way, go to [vite.config.js](./vite.config.js) and update it set `hmr` to false to disable hot module reloading (HMR). The full config will look like this:
+Signals seemed like an ideal way to manage this.
 
-```js
-export default defineConfig({
-  plugins: [],
-  server: {
-    host: '0.0.0.0',
-    hmr: false, // Change this line to `false` disable auto-refreshing.
-  }
-})
+```JavaScript
+import { compile } from "@paulkinlan/reactive-prompt";
+import { effect } from "@preact/signals-core";
+
+const name = signal("Paul");
+
+const response = compile`Say hello to ${name}.`;
+
+effect(async () => {
+  console.log(await response.value);
+});
+
+name.value = "Serene";
 ```
 
-## Packages
+## Chrome's experimental prompt API
 
-Because this template uses Vite to build your code, you can add install and use npm packages. Simple open the Packager tool to search and manage your packages.
+This library relies on Chrome's experiemental prompt API.
 
-## Learn More
+To use this, you need at least Chrome 127 (Dev Channel) and to enable the following flags.
 
-Check out [the vite docs](https://vitejs.dev) to learn more about configuring a frontend application.
+* chrome://flags/#prompt-api-for-gemini-nano
+* chrome://flags/#optimization-guide-on-device-model "Enable Bypass"
+
+## What about other prompt APIs?
+
+The `compile` tagged template can easily be ported to other APIs. I haven't done it, but it should be possible.

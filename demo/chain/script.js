@@ -1,25 +1,5 @@
-import { signal, effect, batch, computed } from "@preact/signals-core";
-
-// A prompt template builder
-function compile(strings, ...values) {
-  const session = model.createTextSession();
-
-  return computed(async () => {
-    const result = [strings[0]];
-    for (let valueIdx = 0; valueIdx < values.length; valueIdx++) {
-      let value = values[valueIdx];
-      if (
-        "brand" in value &&
-        typeof value.brand === "symbol" &&
-        Symbol.keyFor(value.brand) === "preact-signals"
-      ) {
-        value = value.value;
-      }
-      result.push(await value, strings[valueIdx + 1]);
-    }
-    return session.then((_) => _.prompt(result.join("")));
-  });
-}
+import { signal, effect, batch } from "@preact/signals-core";
+import { compile } from "@paulkinlan/reactive-prompt";
 
 onload = () => {
   const submit = document.getElementById("submit");

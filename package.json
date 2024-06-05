@@ -1,14 +1,17 @@
 {
-  "name": "my-project",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@paulkinlan/reactive-prompt",
+  "version": "0.0.1",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build demo/",
     "preview": "vite preview"
   },
+  "type": "module",
+  "main": "index.js",
   "dependencies": {
-    "@preact/signals-core": "^1.6.0",
+    "@preact/signals-core": "^1.6.0"
+  },
+  "devDependencies": {
     "vite": "^5.0.12"
   }
 }
