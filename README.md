@@ -9,21 +9,54 @@ I thought it would be neat to experiment with:
 
 Preact's `Signals` seemed like an ideal way to manage this.
 
-The `reactive-prompt` library exports a single function called `compile`. It's a tagged template litteral which allows you to substitute any variable including Signals. When a Signal is referenced, it's prompt will be recalculated, and there we have reactive prompts.
+The `reactive-prompt` library exports a single function called `prompt`. It's a tagged template litteral which allows you to substitute any variable including Signals. When a Signal is referenced and updated, it's prompt will be recalculated.... and now we have reactive prompts.
+
+### Simple Demo
 
 ```JavaScript
-import { compile } from "@paulkinlan/reactive-prompt";
+import { prompt } from "@paulkinlan/reactive-prompt";
 import { signal, effect } from "@preact/signals-core";
 
 const name = signal("Paul");
 
-const response = compile`Say "Hello ${name}".`;
+const response = prompt`Say "Hello ${name}".`;
 
 effect(async () => {
   console.log(await response.value);
 });
 
 setTimeout(() => name.value = "Serene", 2000);
+```
+
+### Prompt Chaining
+
+You can chain multiple prompts together, that is the output of one prompt can be the input of another prompt. For sufficiently complex data flows this means that you only the prompts that need updating will be re-run.
+
+```JavaScript
+import { prompt } from "@paulkinlan/reactive-prompt";
+import { signal, effect } from "@preact/signals-core";
+
+const nameSignal = signal("Paul Kinlan");
+
+const prompterSignal = prompt`Using "${nameSignal}", extract the following data:
+
++ First name
++ Surname
++ Date of Birth
+
+Return as valid JSON
+"`;
+
+const uiBuilderSignal = prompt`You are an expert web developer, and you have been tasked with creating a form for a client. The form should have the following fields: "${prompterSignal}".
+
+Return the required HTML for the form only and populate the default values.`;
+
+effect(async () => {
+  const val = await uiBuilderSignal.value;
+  output.innerHTML = parseCodeFromMarkdown(val);
+});
+
+setTimeout(() => name.value = "Jack Jones", 5000);
 ```
 
 ## Chrome's experimental prompt API
@@ -37,4 +70,4 @@ To use this, you need at least Chrome 127 (Dev Channel) and to enable the follow
 
 ## What about other prompt APIs?
 
-The `compile` tagged template can easily be ported to other APIs. I haven't done it, but it should be possible.
+The `prompt` tagged template can easily be ported to other APIs. I haven't done it, but it should be possible.

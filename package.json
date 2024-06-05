@@ -1,15 +1,25 @@
 {
   "name": "@paulkinlan/reactive-prompt",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "scripts": {
     "dev": "vite",
-    "build": "vite build demo/",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "type": "module",
-  "main": "index.js",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.umd.cjs",
+  "module": "./dist/index.js",
   "dependencies": {
     "@preact/signals-core": "^1.6.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.cjs"
+    }
   },
   "devDependencies": {
     "vite": "^5.0.12"

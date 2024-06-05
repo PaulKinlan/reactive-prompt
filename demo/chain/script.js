@@ -1,5 +1,5 @@
 import { signal, effect, batch } from "@preact/signals-core";
-import { compile } from "@paulkinlan/reactive-prompt";
+import { prompt } from "@paulkinlan/reactive-prompt";
 
 onload = () => {
   const submit = document.getElementById("submit");
@@ -8,7 +8,7 @@ onload = () => {
 
   const nameSignal = signal("");
 
-  const prompterSignal = compile`Using "${nameSignal}", extract the following data:
+  const prompterSignal = prompt`Using "${nameSignal}", extract the following data:
 
 + First name
 + Surname
@@ -17,7 +17,7 @@ onload = () => {
 Return as valid JSON
 "`;
 
-  const uiBuilderSignal = compile`You are an expert web developer, and you have been tasked with creating a form for a client. The form should have the following fields: "${prompterSignal}".
+  const uiBuilderSignal = prompt`You are an expert web developer, and you have been tasked with creating a form for a client. The form should have the following fields: "${prompterSignal}".
 
 Return the required HTML for the form only and populate the default values.`;
 

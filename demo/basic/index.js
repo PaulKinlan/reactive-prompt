@@ -1,8 +1,8 @@
-import { compile } from "@paulkinlan/reactive-prompt";
-import { effect } from "@preact/signals-core";
+import { prompt } from "@paulkinlan/reactive-prompt";
+import { signal, effect } from "@preact/signals-core";
 
 const name = signal("Paul");
-const response = compile`Say "hello ${name}".`;
+const response = prompt`Say "hello ${name}".`;
 
 effect(async () => {
   console.log(await response.value);
