@@ -15,9 +15,22 @@ export default defineConfig({
   },
   build: {
     lib: {
+      formats: ["es"],
       entry: resolve(__dirname, "lib/index.js"),
-      name: "ReactivePrompt",
       fileName: "index",
     },
+    rollupOptions: {
+      // make sure to externalize deps that shouldn't be bundled
+      // into your library
+      external: ["@preact/signals-core"],
+      output: {
+        // Provide global variables to use in the UMD build
+        // for externalized deps
+        globals: {
+          signalsCore: "@preact/signals-core",
+        },
+      },
+    },
+    soucemap: true,
   },
 });

@@ -1,4 +1,4 @@
-import { prompt } from "@paulkinlan/reactive-prompt";
+import { prompt } from  "../../dist/index.js"//"@paulkinlan/reactive-prompt";
 import { signal, effect } from "@preact/signals-core";
 
 const name = signal("Paul");
@@ -8,4 +8,4 @@ effect(async () => {
   console.log(await response.value);
 });
 
-name.value = "Serene";
+setTimeout(() => (name.value = "Serene"), 3000);
