@@ -1,6 +1,6 @@
 {
   "name": "@paulkinlan/reactive-prompt",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -22,5 +22,11 @@
   },
   "devDependencies": {
     "vite": "^5.0.13"
+  },
+  "author": "Paul Kinlan <paul.kinlan@gmail.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paulkinlan/reactive-prompt"
   }
 }
