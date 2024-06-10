@@ -19,7 +19,7 @@ import { signal, effect } from "@preact/signals-core";
 
 const name = signal("Paul");
 
-const response = prompt`Say "Hello ${name}".`;
+const response = await prompt`Say "Hello ${name}".`;
 
 effect(async () => {
   console.log(await response.value);
@@ -38,7 +38,7 @@ import { signal, effect } from "@preact/signals-core";
 
 const nameSignal = signal("Paul Kinlan");
 
-const prompterSignal = prompt`Using "${nameSignal}", extract the following data:
+const prompterSignal = await prompt`Using "${nameSignal}", extract the following data:
 
 + First name
 + Surname
@@ -47,7 +47,7 @@ const prompterSignal = prompt`Using "${nameSignal}", extract the following data:
 Return as valid JSON
 "`;
 
-const uiBuilderSignal = prompt`You are an expert web developer, and you have been tasked with creating a form for a client. The form should have the following fields: "${prompterSignal}".
+const uiBuilderSignal = await prompt`You are an expert web developer, and you have been tasked with creating a form for a client. The form should have the following fields: "${prompterSignal}".
 
 Return the required HTML for the form only and populate the default values.`;
 
