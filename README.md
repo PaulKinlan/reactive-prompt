@@ -59,6 +59,29 @@ effect(async () => {
 setTimeout(() => name.value = "Jack Jones", 5000);
 ```
 
+### Custom Settings
+
+Many LLM's require custom settings, however this implementation that uses tagged template litterals that return a signal has forgone a typical constructor where you might be able to add in custom configuration such as `temperature`, `topK` or even environment variables. To get around this, we use a custom `PromptConfiguration` object that can be embeded in a prompt and used by the underlying implementation. This configuration will be removed from the acutal prompt when it's executed.
+
+Note: `ChromePromptConfiguration` is a subclass of `PromptConfiguration` and enables you to set the specific configuration options for Chrome's prompting library. When we add support for more LLM's each LLM will have it's own `PromptConfiguration` subclass.
+
+```JavaScript
+import { prompt, ChromePromptConfiguration } from "@paulkinlan/reactive-prompt";
+import { signal, effect } from "@preact/signals-core";
+
+const name = signal("Paul");
+const config = new ChromePromptConfiguration();
+config.temperature = 0.5;
+config.topK = 10;
+const response = await prompt`${config}Say "hello ${name}".`;
+
+effect(async () => {
+  console.log(await response.value);
+});
+
+setTimeout(() => (name.value = "Serene"), 3000);
+```
+
 ## Chrome's experimental prompt API
 
 This library relies on Chrome's experiemental prompt API.
