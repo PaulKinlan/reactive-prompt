@@ -1,5 +1,5 @@
 import { signal, effect, batch } from "@preact/signals-core";
-import { prompt } from "@paulkinlan/reactive-prompt";
+import { prompt } from "@paulkinlan/reactive-prompt/chrome";
 
 onload = async () => {
   const submit = document.getElementById("submit");

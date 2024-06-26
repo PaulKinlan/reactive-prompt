@@ -14,7 +14,7 @@ The `reactive-prompt` library exports a single function called `prompt`. It's a 
 ### Simple Demo
 
 ```JavaScript
-import { prompt } from "@paulkinlan/reactive-prompt";
+import { prompt } from "@paulkinlan/reactive-prompt/chrome";
 import { signal, effect } from "@preact/signals-core";
 
 const name = signal("Paul");
@@ -33,7 +33,7 @@ setTimeout(() => name.value = "Serene", 2000);
 You can chain multiple prompts together, that is the output of one prompt can be the input of another prompt. For sufficiently complex data flows this means that you only the prompts that need updating will be re-run.
 
 ```JavaScript
-import { prompt } from "@paulkinlan/reactive-prompt";
+import { prompt } from "@paulkinlan/reactive-prompt/chrome";
 import { signal, effect } from "@preact/signals-core";
 
 const nameSignal = signal("Paul Kinlan");
@@ -66,7 +66,7 @@ Many LLM's require custom settings, however this implementation that uses tagged
 Note: `ChromePromptConfiguration` is a subclass of `PromptConfiguration` and enables you to set the specific configuration options for Chrome's prompting library. When we add support for more LLM's each LLM will have it's own `PromptConfiguration` subclass.
 
 ```JavaScript
-import { prompt, ChromePromptConfiguration } from "@paulkinlan/reactive-prompt";
+import { prompt, ChromePromptConfiguration } from "@paulkinlan/reactive-prompt/chrome";
 import { signal, effect } from "@preact/signals-core";
 
 const name = signal("Paul");
@@ -91,6 +91,27 @@ To use this, you need at least Chrome 127 (Dev Channel) and to enable the follow
 * chrome://flags/#prompt-api-for-gemini-nano
 * chrome://flags/#optimization-guide-on-device-model "Enable Bypass"
 
-## What about other prompt APIs?
+## Using the Gemini API
 
-The `prompt` tagged template can easily be ported to other APIs. I haven't done it, but it should be possible.
+You can now do text completion against Gemini. Import the Gemini module 
+and use the same `prompt` function. This function requires a mandatory instance of `GeminiPromptConfiguration` with your Gemini API key.
+
+```JavaScript
+import {
+  prompt,
+  GeminiPromptConfiguration,
+} from "@paulkinlan/reactive-prompt/gemini";
+import { signal, effect } from "@preact/signals-core";
+
+const name = signal("Paul");
+
+const config = new GeminiPromptConfiguration();
+config.key = window.prompt("API Key");
+const response = await prompt`${config}Just say the words "hello ${name}".`;
+
+effect(async () => {
+  console.log(await response.value);
+});
+
+setTimeout(() => (name.value = "Serene"), 3000);
+```

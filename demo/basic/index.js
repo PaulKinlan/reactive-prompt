@@ -1,4 +1,4 @@
-import { prompt } from "../../dist/index.js"; //"@paulkinlan/reactive-prompt";
+import { prompt } from "@paulkinlan/reactive-prompt/chrome";
 import { signal, effect } from "@preact/signals-core";
 
 const name = signal("Paul");

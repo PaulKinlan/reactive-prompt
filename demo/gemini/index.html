@@ -1,0 +1,23 @@
+<script type="module">
+  import {
+    prompt,
+    GeminiPromptConfiguration,
+  } from "@paulkinlan/reactive-prompt/gemini";
+  import { signal, effect } from "@preact/signals-core";
+
+  const name = signal("Paul");
+  const config = new GeminiPromptConfiguration();
+  config.key = window.prompt("API Key");
+  if (config.key == null) {
+    console.log("No API key provided");
+    
+  }
+  const response =
+    await prompt`${config}Repeat the following words: "hello ${name}".`;
+
+  effect(async () => {
+    console.log(await response.value);
+  });
+
+  setTimeout(() => (name.value = "Serene"), 3000);
+</script>

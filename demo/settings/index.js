@@ -1,4 +1,7 @@
-import { prompt, ChromePromptConfiguration } from "../../dist/index.js";
+import {
+  prompt,
+  ChromePromptConfiguration,
+} from "@paulkinlan/reactive-prompt/chrome";
 import { signal, effect } from "@preact/signals-core";
 
 const name = signal("Paul");
