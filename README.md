@@ -9,7 +9,7 @@ I thought it would be neat to experiment with:
 
 Preact's `Signals` seemed like an ideal way to manage this.
 
-The `reactive-prompt` library exports a single function called `prompt`. It's a tagged template litteral which allows you to substitute any variable including Signals. When a Signal is referenced and updated, it's prompt will be recalculated.... and now we have reactive prompts.
+The `reactive-prompt` library exports a single function called `prompt` (streaming coming soon). It's a tagged template litteral which allows you to substitute any variable including Signals. When a Signal is referenced and updated, it's prompt will be recalculated.... and now we have reactive prompts.
 
 ### Simple Demo
 
@@ -106,6 +106,31 @@ import { signal, effect } from "@preact/signals-core";
 const name = signal("Paul");
 
 const config = new GeminiPromptConfiguration();
+config.key = window.prompt("API Key");
+const response = await prompt`${config}Just say the words "hello ${name}".`;
+
+effect(async () => {
+  console.log(await response.value);
+});
+
+setTimeout(() => (name.value = "Serene"), 3000);
+```
+
+## Using the OpenAI API
+
+You can now do text completion against OpenAI. Import the OpenAI module 
+and use the same `prompt` function. This function requires a mandatory instance of `OpenAIPromptConfiguration` with your OpenAI API key.
+
+```JavaScript
+import {
+  prompt,
+  OpenAIPromptConfiguration,
+} from "@paulkinlan/reactive-prompt/openai";
+import { signal, effect } from "@preact/signals-core";
+
+const name = signal("Paul");
+
+const config = new OpenAIPromptConfiguration();
 config.key = window.prompt("API Key");
 const response = await prompt`${config}Just say the words "hello ${name}".`;
 

@@ -18,6 +18,7 @@ export default defineConfig({
       formats: ["es"],
       entry: {
         index: resolve(__dirname, "lib/index.js"),
+        openai: resolve(__dirname, "lib/openai.js"),
         chrome: resolve(__dirname, "lib/chrome.js"),
         gemini: resolve(__dirname, "lib/gemini.js"),
       },
@@ -25,7 +26,7 @@ export default defineConfig({
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ["@preact/signals-core", "@google/generative-ai"],
+      external: ["@preact/signals-core", "@google/generative-ai", "openai"],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps
