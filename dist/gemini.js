@@ -1,92 +1,86 @@
-var h = (t, o, e) => {
-  if (!o.has(t))
+var c = (t, n, e) => {
+  if (!n.has(t))
     throw TypeError("Cannot " + e);
 };
-var r = (t, o, e) => (h(t, o, "read from private field"), e ? e.call(t) : o.get(t)), i = (t, o, e) => {
-  if (o.has(t))
+var o = (t, n, e) => (c(t, n, "read from private field"), e ? e.call(t) : n.get(t)), r = (t, n, e) => {
+  if (n.has(t))
     throw TypeError("Cannot add the same private member more than once");
-  o instanceof WeakSet ? o.add(t) : o.set(t, e);
-}, s = (t, o, e, g) => (h(t, o, "write to private field"), g ? g.call(t, e) : o.set(t, e), e);
-import { computed as w } from "@preact/signals-core";
-import { GoogleGenerativeAI as v } from "@google/generative-ai";
-import { P as y } from "./configuration-W3kPAhYs.js";
-var l, m, p, f, d, c;
-class x extends y {
+  n instanceof WeakSet ? n.add(t) : n.set(t, e);
+}, i = (t, n, e, h) => (c(t, n, "write to private field"), h ? h.call(t, e) : n.set(t, e), e);
+import { effect as v } from "@preact/signals-core";
+import { GoogleGenerativeAI as y } from "@google/generative-ai";
+import { P as d, a as w } from "./accumulate-6PdxjI_q.js";
+var u, m, l, p, g, f;
+class x extends d {
   constructor() {
     super();
-    i(this, l, void 0);
-    i(this, m, void 0);
-    i(this, p, void 0);
-    i(this, f, void 0);
-    i(this, d, void 0);
-    i(this, c, void 0);
+    r(this, u, void 0);
+    r(this, m, void 0);
+    r(this, l, void 0);
+    r(this, p, void 0);
+    r(this, g, void 0);
+    r(this, f, void 0);
   }
   get key() {
-    return r(this, d);
+    return o(this, g);
   }
   set key(e) {
-    s(this, d, e);
+    i(this, g, e);
   }
   get maxOutputTokens() {
-    return r(this, f);
+    return o(this, p);
   }
   set maxOutputTokens(e) {
-    s(this, f, e);
+    i(this, p, e);
   }
   get model() {
-    return r(this, c);
+    return o(this, f);
   }
   set model(e) {
-    s(this, c, e);
+    i(this, f, e);
   }
   get temperature() {
-    return r(this, l);
+    return o(this, u);
   }
   set temperature(e) {
-    s(this, l, e);
+    i(this, u, e);
   }
   get topP() {
-    return r(this, m);
+    return o(this, m);
   }
   set topP(e) {
-    s(this, m, e);
+    i(this, m, e);
   }
   get topK() {
-    return r(this, p);
+    return o(this, l);
   }
   set topK(e) {
-    s(this, p, e);
+    i(this, l, e);
   }
 }
-l = new WeakMap(), m = new WeakMap(), p = new WeakMap(), f = new WeakMap(), d = new WeakMap(), c = new WeakMap();
-async function K(t, ...o) {
-  let e;
-  for (let a of o)
-    a instanceof y && (e = a);
-  if (e == null)
+u = new WeakMap(), m = new WeakMap(), l = new WeakMap(), p = new WeakMap(), g = new WeakMap(), f = new WeakMap();
+function K(t, ...n) {
+  const e = signal(), h = w(t, n, x);
+  let s;
+  for (let a of n)
+    a instanceof d && (s = a);
+  if (s == null)
     throw new Error(
       "No configuration provided. You will need at least an environment key"
     );
-  if (!("key" in e))
+  if (!("key" in s))
     throw new Error(
       "No environment key provided. You will need at least an environment key"
     );
-  const k = new v(e.key).getGenerativeModel({
-    model: e.model || "gemini-1.5-flash",
-    generationConfig: e
+  const k = new y(s.key).getGenerativeModel({
+    model: s.model || "gemini-1.5-flash",
+    generationConfig: s
   });
-  return w(async () => {
-    const a = [t[0]];
-    for (let u = 0; u < o.length; u++) {
-      let n = o[u];
-      if ("brand" in n && typeof n.brand == "symbol" && Symbol.keyFor(n.brand) === "preact-signals" && (n = n.value), n instanceof x) {
-        a.push(t[u + 1]);
-        continue;
-      }
-      a.push(await n, t[u + 1]);
-    }
-    return (await (await k.generateContent(a.join(""))).response).text();
-  });
+  return v(() => {
+    k.generateContent(h.value).then((a) => a.response).then((a) => {
+      e.value = a.text();
+    });
+  }), e;
 }
 export {
   x as GeminiPromptConfiguration,

@@ -1,0 +1,21 @@
+<script type="module">
+  import {
+    prompt,
+    ChromePromptConfiguration,
+  } from "@paulkinlan/reactive-prompt/chrome";
+  import { signal, computed, effect } from "@preact/signals-core";
+
+  // This demo asks for extra data, and will re-ask for it if it thinks the input data has updated.
+
+  const name = signal("Paul");
+  const question = computed(() => window.prompt(`What is your age ${name}?`));
+
+  const response =
+    await prompt`"Reply with only following: "${question}".`;
+
+  effect(async () => {
+    console.log(await response.value);
+  });
+
+  setTimeout(() => { console.log("Updating name"); name.value = "Serene" }, 7000);
+</script>

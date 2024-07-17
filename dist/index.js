@@ -1,4 +1,4 @@
-import { P as i } from "./configuration-W3kPAhYs.js";
+import { P as i } from "./accumulate-6PdxjI_q.js";
 import { ChromePromptConfiguration as e, prompt as a } from "./chrome.js";
 import { GeminiPromptConfiguration as P, prompt as g } from "./gemini.js";
 import { OpenAIPromptConfiguration as s, prompt as u } from "./openai.js";

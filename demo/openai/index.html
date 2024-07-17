@@ -9,13 +9,13 @@
   const config = new OpenAIPromptConfiguration();
   config.key = window.prompt("API Key");
   config.dangerouslyAllowBrowser = true;
-  
+
   if (config.key == null) {
     console.log("No API key provided");
   }
-  
+
   const response =
-    await prompt`${config}Repeat the following words: "hello ${name}".`;
+    await prompt`${config}Reply with just the following words: "hello ${name}".`;
 
   effect(async () => {
     console.log(await response.value);

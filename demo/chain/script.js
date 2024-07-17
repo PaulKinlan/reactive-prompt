@@ -8,8 +8,7 @@ onload = async () => {
 
   const nameSignal = signal("");
 
-  const prompterSignal =
-    await prompt`Using "${nameSignal}", extract the following data:
+  const prompterSignal = prompt`Using "${nameSignal}", extract the following data:
 
 + First name
 + Surname
@@ -18,24 +17,22 @@ onload = async () => {
 Return as valid JSON
 "`;
 
-  const uiBuilderSignal =
-    await prompt`You are an expert web developer, and you have been tasked with creating a form for a client. The form should have the following fields: "${prompterSignal}".
+  const uiBuilderSignal = prompt`You are an expert web developer, and you have been tasked with creating a form for a client. The form should have the following fields: "${prompterSignal}".
 
 Return the required HTML for the form only and populate the default values.`;
 
-  effect(async () => {
-    const val = await uiBuilderSignal.value;
+  effect(() => {
+    const val = uiBuilderSignal.value;
     output.innerHTML = parseCodeFromMarkdown(val);
   });
 
-  submit.onclick = async () => {
-    batch(() => {
-      nameSignal.value = input.value;
-    });
+  submit.onclick = () => {
+    nameSignal.value = input.value;
   };
 };
 
 const parseCodeFromMarkdown = (code) => {
+  if (code == undefined) return "";
   const match = code.match(/```(.*)\n([\s\S\d\D]+)\n```/m);
   if (!match) return "";
 

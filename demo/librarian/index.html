@@ -1,0 +1,52 @@
+<script type="module">
+  import {
+    prompt,
+    ChromePromptConfiguration,
+  } from "@paulkinlan/reactive-prompt/chrome";
+  import { signal, computed, effect } from "@preact/signals-core";
+
+  // Trying to emulate https://breadboard-ai.github.io/breadboard/docs/guides/librarian/#step-2-add-summarizer
+
+
+
+  const summarizer = async (context) => {
+    const persona = signal("You are an expert librarian. Given any topic, and the raw book search results, you can come up with a list of book recommendations.");
+    const task = signal("Come up with a list of 5-7 recommendations. Reply in markdown.");
+    return prompt`${persona}
+${task}
+Books:
+${context}`;
+  }
+
+  const researcher = (query) => computed(async () => {
+    // Gemini Nano doesn't have function calling so we can only just call one function.
+    const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}&orderBy=relevance`)
+
+    const books = await response.json();
+    return books.items.slice(0, 10).map(book => {
+      const { title, subtitle, authors, description } = book.volumeInfo;
+      return `Title:${title}, 
+${(subtitle) ? `Subtitle: ${subtitle}` : ""}
+${(authors) ? `Authors: ${authors.join(", ")}` : ""}
+${(description) ? `Description: ${description}` : ""}`
+    }).join("\n\n");
+  })
+
+  const interviewPlanner = (topic) => computed(async () => {
+    return prompt`Based on the initial topic, come up with the themes for a 3-5 question interview to collect just enough information to look for an interesting book in the library.
+Topic: ${topic}`
+  })
+
+  const question = signal();
+
+  //const plan = interviewPlanner(question)
+  const research = researcher(question)
+  const suggestions = await summarizer(research);
+
+  question.value = window.prompt(`What genre ?`)
+
+
+  effect(async () => {
+    console.log("Suggestions", await suggestions.value);
+  });
+</script>
