@@ -29,6 +29,9 @@
     },
     "./gemini": {
       "import": "./dist/gemini.js"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.js"
     }
   },
   "devDependencies": {
