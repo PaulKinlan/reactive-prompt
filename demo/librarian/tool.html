@@ -1,0 +1,32 @@
+<script type="module">
+  import {
+    prompt,
+    ChromePromptConfiguration
+  } from "@paulkinlan/reactive-prompt/chrome";
+
+  import { isSignal } from "@paulkinlan/reactive-prompt/utils"
+
+  import { signal, computed, effect } from "@preact/signals-core";
+
+  import { ToolCaller } from "./agent.js";
+
+  const toolCaller = new ToolCaller({
+    tools: [{
+      func:
+        function getWeather(location) { return `It's Hot in ${location}`; },
+      description: "Get the weather for a given location"
+    },
+    {
+      func: function getTime(location /* type: int */) { return Date.now() },
+      description: "Get the time for a given location"
+    }
+    ]
+  })
+
+  toolCaller.context.value = "What is the weather in London?";
+  toolCaller.context.value = "What is the time in Wales?";
+
+  effect(() => {
+    console.log(toolCaller.response.value)
+  });
+</script>
