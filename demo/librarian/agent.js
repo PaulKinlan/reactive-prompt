@@ -120,6 +120,9 @@ class Human extends BaseAgent {
   }
 }
 
+/*
+  Because we don't have memory, we might want to accumulate context at some point in a graph.
+*/
 class Accumulator extends BaseAgent {
   #internalList = [];
 
@@ -210,7 +213,7 @@ class ToolCaller extends Agent {
             (argName) => function_args[argName]
           );
 
-          // try and call the function
+          // try and call the function. TODO, can we await for promises?
           this.#finalResponse.value = tool.func(...flattenedArgs);
           return;
         }
@@ -262,70 +265,12 @@ Your output must be a valid JSON of the following format:
 
 \`\`\`json
 {
-  "max": "number, optional. Specifies how many iterations to make. Useful when the job specifies the upper limit the number of items in the list.",
   "todo": [{
     "task": "string, The task description. Use action-oriented language, starting with a verb that fits the task."
-  }]
-  "doneMarker": "string, optional. The marker that will be used by others to signal completion."
+  }],
   "error": "string, optional. A description of why you're unable to create a plan"
 }
 \`\`\`
-
-There are four kinds of jobs that you can make plans for. 
-
-1) The indefinite job. These are useful when there is not a definite completion condition, and is usually formulated with words like "indefinitely" or "forever". In such cases, the plan will look like an object without a "todo" property, with "max" set to a very large number:
-
-\`\`\`json
-{
-  "max": 100000000
-}
-\`\`\`
-
-2) The step-by-step job. These are for situations when a distinct, known number of tasks can be discerned from the job. For example, when asked to write chapters of a book following an outline, there's a clear list of tasks that can be discerned (one "Write <chapter title>" per chapter). 
-
-A plan for this kind of job will look like an object with "todo" items:
-
-\`\`\`json
-{
-  "todo": [
-    { "task": "<action-oriented description of task 1" },
-    { "task": "<action-oriented description of task 2" },
-    { "task": "<action-oriented description of task 3" }
-  ]
-}
-\`\`\`\
-
-If the job includes a limit on how many tasks to produce, use the "max" property to indicate that. For instance, if the job contains three items that can be discerned, but asks to only do two of them:
-
-\`\`\`json
-{
-  "max:" 2,
-  "todo": [
-    { "task": "<action-oriented description of task 1" },
-    { "task": "<action-oriented description of task 2" },
-    { "task": "<action-oriented description of task 3" }
-  ]
-}
-\`\`\`
-
-3) Just repeat the steps job. These jobs do not have a distinct tasks, but rather just a number of steps to repeat. In this case, omit the "todo" and just use "max" property:
-
-\`\`\`json
-{
-  "max": 4
-}
-\`\`\`
-
-4) The job where the completion is signaled by others. These are the types of jobs where the number of iterations or the exact steps are unknown, and the
-completion signal is issued by those who are executing the individual steps. In such cases, use the "doneMarker" property and use the marker specified:
-
-\`\`\`json
-{
-  "doneMarker": "<the marker that will be used to signal completion>"
-}
-\`\`\`
-
-Common markers are "##STOP##" or "##DONE##", but could be different depending on a job. This type of the job is mutually exclusive with the step-by-step type, so the "todo" and "doneMarker" may never be specified together.
 
 When you are unable to create plan from the job, reply with:
 
@@ -351,20 +296,19 @@ When you are unable to create plan from the job, reply with:
       if (baseContext == undefined) return;
 
       try {
+        const todo = [];
         const json = this.#extractCode(response);
 
         if (json == "") {
-          console.error(`Unable to extract code from response: ${response}`);
-          return;
+          console.log(
+            `Unable to extract code from response: '${response}', using response as task`
+          );
+          todo.push(response);
         }
 
-        if ("todo" in json == false) {
-          console.error(`Unable to extract todo's from response: ${response}`);
-          return;
+        if (typeof json == "object" && "todo" in json) {
+          todo.push(...json.todo);
         }
-
-        // We can only run an agent task one at a time.
-        const { todo } = json;
 
         let processing = false;
         // Contains the results from the next node.

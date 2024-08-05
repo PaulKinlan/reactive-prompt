@@ -1,5 +1,8 @@
 import { signal, effect, batch } from "@preact/signals-core";
-import { prompt } from "@paulkinlan/reactive-prompt/chrome";
+import {
+  prompt,
+  ChromePromptConfiguration,
+} from "@paulkinlan/reactive-prompt/chrome";
 
 onload = async () => {
   const submit = document.getElementById("submit");
@@ -14,7 +17,9 @@ onload = async () => {
 + Surname
 + Date of Birth
 
-Return as valid JSON
+Return as valid JSON ${new ChromePromptConfiguration({
+    debug: true,
+  })}
 "`;
 
   const uiBuilderSignal = prompt`You are an expert web developer, and you have been tasked with creating a form for a client. The form should have the following fields: "${prompterSignal}".

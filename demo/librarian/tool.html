@@ -12,19 +12,19 @@
 
   const toolCaller = new ToolCaller({
     tools: [{
-      func:
-        function getWeather(location) { return `It's Hot in ${location}`; },
+      func: function getWeather(location) { return `It's Hot in ${location}`; },
       description: "Get the weather for a given location"
     },
     {
-      func: function getTime(location /* type: int */) { return Date.now() },
+      func: function getTime(location) { return Date.now(); },
       description: "Get the time for a given location"
     }
     ]
   })
 
   toolCaller.context.value = "What is the weather in London?";
-  toolCaller.context.value = "What is the time in Wales?";
+
+  setTimeout(() => toolCaller.context.value = "What is the time in Wales?", 5000);
 
   effect(() => {
     console.log(toolCaller.response.value)

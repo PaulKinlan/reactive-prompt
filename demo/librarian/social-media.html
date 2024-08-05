@@ -1,0 +1,70 @@
+<script type="module">
+  import {
+    prompt,
+    ChromePromptConfiguration
+  } from "@paulkinlan/reactive-prompt/chrome";
+
+  import { isSignal } from "@paulkinlan/reactive-prompt/utils"
+
+  import { signal, computed, effect } from "@preact/signals-core";
+
+  import { ToolCaller, Planner, Human, Agent, Accumulator } from "./agent.js";
+
+  const interviewer = new Agent({
+    persona: `You are an expert interviewer, whose job it is to interview the 
+user to find out what their social media post is about and theirs goals for
+it are. Based on the theme provided in the context and incorporating the history of the interview so far, ask ONE question that allows the user to easily
+and quickly type an answer. You only need to get one basic answer from the user.`,
+    task: `Ask just ONE question that includes what this social media post is
+about and its main goal. You only need to elicit ONE answer.
+Do so in a friendly and casual manner.`
+  });
+
+  const captionCreator = new Agent({
+    persona: `You are an expert social media caption creator. You take user
+input and the summary of the business search results to create an caption such 
+as those found on Instagram that fit this company's profile and client needs.
+As an expert, you will decide on the text, hashtags and emojis needed for the caption.`,
+    task: `Create a complete social media caption based on the user's business and post details and your expert knowledge of the business world and social media.`
+  })
+
+  const interviewPlanner = new Planner({
+    task: `Based on the context, come up with ONE question to collect just enough information from the user about the social media post's topic and goals. Return JSON as described above`,
+    loop: interviewer
+  });
+
+
+  const human = new Human({
+
+  });
+
+  const accumulator = new Accumulator();
+
+  // These are similar to breadboards wires.
+
+  effect(() => {
+    if (interviewPlanner.response.value == undefined || accumulator.response.value == undefined || accumulator.response.value.length == 0) {
+      return;
+    }
+
+    // Join these two together.
+    captionCreator.context.value = ` 
+Question to user: ${interviewPlanner.response.value[0]}
+Answer from user: ${accumulator.response.value[0]}`;
+  })
+
+  effect(() => {
+    accumulator.context.value = human.response.value;
+  })
+
+  effect(() => {
+    console.log("Caption: ", captionCreator.response.value);
+  })
+
+  effect(() => {
+    // interviewer to human
+    human.context.value = interviewer.response.value;
+  })
+
+  interviewPlanner.context.value = "Web Development with AI";
+</script>
