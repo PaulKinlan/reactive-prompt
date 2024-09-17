@@ -35,7 +35,7 @@
     }
   },
   "devDependencies": {
-    "vite": "^5.0.13"
+    "vite": "^5.2.14"
   },
   "author": "Paul Kinlan <paul.kinlan@gmail.com>",
   "license": "Apache-2.0",
