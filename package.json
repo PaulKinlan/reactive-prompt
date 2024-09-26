@@ -1,6 +1,6 @@
 {
   "name": "@paulkinlan/reactive-prompt",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -15,6 +15,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.19.0",
     "@preact/signals-core": "^1.8.0",
+    "ollama": "^0.5.9",
     "openai": "^4.64.0"
   },
   "exports": {
@@ -29,6 +30,9 @@
     },
     "./gemini": {
       "import": "./dist/gemini.js"
+    },
+    "./ollama": {
+      "import": "./dist/ollama.js"
     },
     "./utils": {
       "import": "./dist/utils/index.js"

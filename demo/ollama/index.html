@@ -1,0 +1,19 @@
+<script type="module">
+  import {
+    prompt,
+    OllamaPromptConfiguration,
+  } from "@paulkinlan/reactive-prompt/ollama";
+  import { signal, effect } from "@preact/signals-core";
+
+  const name = signal("Paul");
+  const config = new OllamaPromptConfiguration({ model: "llama3.2", debug: true });
+
+  const response =
+    await prompt`${config}Repeat the following words: "hello ${name}".`;
+
+  effect(async () => {
+    console.log(await response.value);
+  });
+
+  setTimeout(() => (name.value = "Serene"), 3000);
+</script>
