@@ -88,12 +88,12 @@ This library relies on Chrome's experiemental prompt API.
 
 To use this, you need at least Chrome 127 (Dev Channel) and to enable the following flags.
 
-* chrome://flags/#prompt-api-for-gemini-nano
-* chrome://flags/#optimization-guide-on-device-model "Enable Bypass"
+- chrome://flags/#prompt-api-for-gemini-nano
+- chrome://flags/#optimization-guide-on-device-model "Enable Bypass"
 
 ## Using the Gemini API
 
-You can now do text completion against Gemini. Import the Gemini module 
+You can now do text completion against Gemini. Import the Gemini module
 and use the same `prompt` function. This function requires a mandatory instance of `GeminiPromptConfiguration` with your Gemini API key.
 
 ```JavaScript
@@ -118,7 +118,7 @@ setTimeout(() => (name.value = "Serene"), 3000);
 
 ## Using the OpenAI API
 
-You can now do text completion against OpenAI. Import the OpenAI module 
+You can now do text completion against OpenAI. Import the OpenAI module
 and use the same `prompt` function. This function requires a mandatory instance of `OpenAIPromptConfiguration` with your OpenAI API key.
 
 ```JavaScript
@@ -139,4 +139,29 @@ effect(async () => {
 });
 
 setTimeout(() => (name.value = "Serene"), 3000);
+```
+
+## Using the Ollama API
+
+You can now do text completion against Ollama. Import the Ollama module
+and use the same `prompt` function. This function does not require a configuration object and will default to `llama3.2` as the model. If you need to change the model, you can pass in a `model` property in to the `OllamaPromptConfiguration` object.
+
+```JavaScript
+import {
+  prompt,
+  OllamaPromptConfiguration,
+} from "@paulkinlan/reactive-prompt/ollama";
+import { signal, effect } from "@preact/signals-core";
+
+const name = signal("Paul");
+
+const config = new OllamaPromptConfiguration();
+const response = await prompt`${config}Just say the words "hello ${name}".`;
+
+effect(async () => {
+  console.log(await response.value);
+});
+
+setTimeout(() => (name.value = "Serene"), 3000);
+
 ```
