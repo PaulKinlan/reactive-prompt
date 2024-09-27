@@ -21,6 +21,7 @@ export default defineConfig({
         openai: resolve(__dirname, "lib/openai.js"),
         chrome: resolve(__dirname, "lib/chrome.js"),
         gemini: resolve(__dirname, "lib/gemini.js"),
+        ollama: resolve(__dirname, "lib/ollama.js"),
       },
     },
     rollupOptions: {
