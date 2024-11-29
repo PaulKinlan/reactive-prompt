@@ -8,4 +8,4 @@ effect(async () => {
   console.log(await response.value);
 });
 
-setTimeout(() => (name.value = "Serene"), 3000);
+setTimeout(() => (name.value = "Serene"), 5000);
