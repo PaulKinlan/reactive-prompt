@@ -1,0 +1,92 @@
+<script type="module">
+  import {
+    prompt,
+    ChromePromptConfiguration,
+  } from "@paulkinlan/reactive-prompt/chrome";
+  import { isSignal } from "@paulkinlan/reactive-prompt"
+  import { signal, computed, effect } from "@preact/signals-core";
+
+  function accumulate(strings, values) {
+    const returnSignal = signal();
+    effect(() => {
+      const result = [strings[0]];
+      for (let valueIdx = 0; valueIdx < values.length; valueIdx++) {
+        let value = values[valueIdx];
+        if (isSignal(value)) {
+          // This dereference sets up the notification dependency
+          value = value.value;
+        }
+        // TODO: if value is a promise we need to work out how to resolve it as we add it.
+        result.push(value, strings[valueIdx + 1]);
+      }
+
+      returnSignal.value = result.join("");
+    });
+
+    return returnSignal;
+  }
+
+  const f = (strings, ...values) => {
+    const promptSignal = accumulate(
+      strings,
+      values);
+    const returnSignal = signal();
+    const genFunc = signal();
+
+    const parseJS = (js) => {
+      const codeExtractRegExp = /```JavaScript(.*?)```/ims;
+      const results = codeExtractRegExp.exec(js);
+      if (results && results.length > 0) {
+        return results[1].replace(/^\nfunction/, "function");
+      }
+
+      return;
+    }
+
+    effect(() => {
+      genFunc.value = prompt`You are an advanced software engineer. Generate a valid function using only valid JavaScript that will solve the following problem: ${promptSignal}. 
+      
+You MUST follow these rules:
++ Your target platform is the Web Browser.
++ NEVER use TypeScript. 
++ NEVER use NodeJS APIs. 
++ NEVER use Deno specific APIs.
++ Return a function using traditional function format, i.e 'function test() { return 1; }'. DO NOT use arrow functions.
++ NEVER assign the function to a variable.
++ NEVER return anything other than the function, e.g, no examples, no console.log`;
+    })
+
+    return new Promise((resolve, reject) => {
+      effect(() => {
+        const functionScript = genFunc.value;
+        try {
+          const js = parseJS(functionScript);
+
+          if (js) {
+            const func = eval(`(() => { "use strict"; return ${js}; })()`);
+            resolve(func);
+          }
+        }
+        catch (e) {
+          reject(e);
+        }
+      });
+    });
+  }
+
+  const sum = await f`sum two numbers`;
+  const isOdd = await f`is a number odd`;
+  const fetchNews = await f`fetch data from https://api.spaceflightnewsapi.net/v4/articles/ and return JSON`;
+
+  console.log("Sum code", sum)
+
+  console.log("Sum 1 + 23", sum(1, 23))
+
+  console.log("isOdd code", isOdd)
+  console.log(1, "isOdd", isOdd(1))
+  console.log(2, "isOdd", isOdd(2))
+
+  console.log("fetchNews code", fetchNews)
+  console.log("fetchNews data", await fetchNews())
+
+</script>
