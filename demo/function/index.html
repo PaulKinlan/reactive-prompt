@@ -48,6 +48,12 @@
       
 You MUST follow these rules:
 + Your target platform is the Web Browser.
++ You can use any browser APIs.
++ You MUST never try to mutate state outside of the function.
++ You MUST return a value from the function.
++ NEVER attach UI to the DOM. If you need a root DOM element, the caller MUST provide it.
++ NEVER assume that a library is being used, e.g. React, Lodash, etc.
++ NEVER import any libraries (e.g. lodash, moment, React etc).
 + NEVER use TypeScript. 
 + NEVER use NodeJS APIs. 
 + NEVER use Deno specific APIs.
@@ -77,6 +83,7 @@ You MUST follow these rules:
   const sum = await f`sum two numbers`;
   const isOdd = await f`is a number odd`;
   const fetchNews = await f`fetch data from https://api.spaceflightnewsapi.net/v4/articles/ and return JSON`;
+  const addList = await f`Create a UI that allows you to add items to a list and remove items from a list. The developer can provide a list of items. The list should be displayed on the screen attached to a DOM element that I will specify. The list should be displayed in a vertical list. The list should be displayed in the order that the items were added. The list should have a remove button next to each item that when clicked will remove the item from the list. The list should have an input field and a button that when clicked will add the item to the list. The input field should be cleared after the item is added to the list.`;
 
   console.log("Sum code", sum)
 
@@ -88,5 +95,8 @@ You MUST follow these rules:
 
   console.log("fetchNews code", fetchNews)
   console.log("fetchNews data", await fetchNews())
+
+  console.log("addList code", addList);
+  await addList([2, 4, 6, 8, 10], document.body);
 
 </script>
