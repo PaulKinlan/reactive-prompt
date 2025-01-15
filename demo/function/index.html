@@ -31,7 +31,28 @@
       strings,
       values);
     const returnSignal = signal();
-    const genFunc = signal();
+    const genFunc = prompt`You are an advanced software engineer. Generate a valid function using only valid JavaScript that will solve the following problem: ${promptSignal}. 
+      
+You MUST follow these rules:
++ Your target platform is the Web Browser.
++ You can use any browser APIs.
++ NEVER try to mutate state outside of the function.
++ You MUST return a value from the function.
++ When the user asks for a UI the developer create a root element and return that to the user
++ ALWAYS implement all the logic. NEVER leave anything to be implemented later (i.e, no TODOs).
++ ALWAYS use modern JS features (ES6+), e.g fetch etc.
++ NEVER include any comments in the function.
++ NEVER use a library e.g. React, Lodash, etc.
++ NEVER "require" any libraries.
++ NEVER import any libraries (e.g. lodash, moment, React etc).
++ NEVER use TypeScript. 
++ NEVER use NodeJS APIs. 
++ NEVER use Deno specific APIs.
++ NEVER use any sample data in the function. Expect the user to provide it.
++ ONLY return a SINGLE function using traditional function format, i.e 'function test() { return 1; }'. 
++ NEVER use arrow functions.
++ NEVER assign the function to a variable.
++ NEVER return anything other than the function, e.g, no examples, no console.log`;
 
     const parseJS = (js) => {
       const codeExtractRegExp = /```JavaScript(.*?)```/ims;
@@ -43,33 +64,45 @@
       return;
     }
 
-    effect(() => {
-      genFunc.value = prompt`You are an advanced software engineer. Generate a valid function using only valid JavaScript that will solve the following problem: ${promptSignal}. 
-      
-You MUST follow these rules:
-+ Your target platform is the Web Browser.
-+ You can use any browser APIs.
-+ You MUST never try to mutate state outside of the function.
-+ You MUST return a value from the function.
-+ NEVER attach UI to the DOM. If you need a root DOM element, the caller MUST provide it.
-+ NEVER assume that a library is being used, e.g. React, Lodash, etc.
-+ NEVER import any libraries (e.g. lodash, moment, React etc).
-+ NEVER use TypeScript. 
-+ NEVER use NodeJS APIs. 
-+ NEVER use Deno specific APIs.
-+ Return a function using traditional function format, i.e 'function test() { return 1; }'. DO NOT use arrow functions.
-+ NEVER assign the function to a variable.
-+ NEVER return anything other than the function, e.g, no examples, no console.log`;
-    })
+    function stripTypesFromFunctionDeclaration(tsFunctionString) {
+      // Remove interface or type definitions (if any) before processing the function
+      tsFunctionString = tsFunctionString.replace(/^(interface|type)\s+\w+\s*\{[\s\S]*?^\}/gm, '');
+
+      // Regular expression to match a function declaration, including arrow functions
+      const functionRegex = /(?:async\s+)?function\s*\w*\s*(\([\s\S]*?\))\s*(:\s*[\w\s<>[\]|]+)?|const\s+\w+\s*=\s*(?:async\s+)?(\([\s\S]*?\))\s*=>/g;
+
+      // Extract the parameters and function body
+      const match = functionRegex.exec(tsFunctionString);
+      if (!match) {
+        return tsFunctionString; // Return as is if not a function declaration
+      }
+
+      const paramsString = match[1] || match[3]; // Parameter string (group 1 or 3 from regex)
+
+      // Remove type annotations from parameters
+      const strippedParamsString = paramsString.replace(/:\s*[\w\s<>[\]|]+(=\s*[\w\s\(\)]+)?/g, '');
+
+      // Replace the original parameters with the stripped parameters
+      let jsFunctionString = tsFunctionString.replace(paramsString, strippedParamsString);
+
+      // Remove return type annotation (if any)
+      jsFunctionString = jsFunctionString.replace(/(\))\s*:\s*[\w\s<>[\]|]+/, '$1');
+
+      return jsFunctionString;
+    }
 
     return new Promise((resolve, reject) => {
       effect(() => {
         const functionScript = genFunc.value;
+        if (functionScript === undefined) {
+          return;
+        }
+
         try {
-          const js = parseJS(functionScript);
+          const js = stripTypesFromFunctionDeclaration(parseJS(functionScript));
 
           if (js) {
-            const func = eval(`(() => { "use strict"; return ${js}; })()`);
+            const func = eval(`(() => { "use strict"; return function() { return ${js}; }() })()`);
             resolve(func);
           }
         }
@@ -83,20 +116,36 @@ You MUST follow these rules:
   const sum = await f`sum two numbers`;
   const isOdd = await f`is a number odd`;
   const fetchNews = await f`fetch data from https://api.spaceflightnewsapi.net/v4/articles/ and return JSON`;
-  const addList = await f`Create a UI that allows you to add items to a list and remove items from a list. The developer can provide a list of items. The list should be displayed on the screen attached to a DOM element that I will specify. The list should be displayed in a vertical list. The list should be displayed in the order that the items were added. The list should have a remove button next to each item that when clicked will remove the item from the list. The list should have an input field and a button that when clicked will add the item to the list. The input field should be cleared after the item is added to the list.`;
+  //const addList = await f`Create a UI that allows you to add items to a list and remove items from a list. The developer can provide a list of items. The list should be displayed on the screen attached to a DOM element that I will specify. The list should be displayed in a vertical list. The list should be displayed in the order that the items were added. The list should have a remove button next to each item that when clicked will remove the item from the list. The list should have an input field and a button that when clicked will add the item to the list. The input field should be cleared after the item is added to the list.`;
 
-  console.log("Sum code", sum)
+  console.log("Sum code", sum);
+  console.log("Sum 1 + 23", sum(1, 23));
 
-  console.log("Sum 1 + 23", sum(1, 23))
+  console.log("isOdd code", isOdd);
+  console.log(1, "isOdd", isOdd(1));
+  console.log(2, "isOdd", isOdd(2));
 
-  console.log("isOdd code", isOdd)
-  console.log(1, "isOdd", isOdd(1))
-  console.log(2, "isOdd", isOdd(2))
+  console.log("fetchNews code", fetchNews);
+  const news = await fetchNews()
+  console.log("fetchNews data", news);
 
-  console.log("fetchNews code", fetchNews)
-  console.log("fetchNews data", await fetchNews())
+  //console.log("addList code", addList);
+  //await addList([2, 4, 6, 8, 10], document.body);
 
-  console.log("addList code", addList);
-  await addList([2, 4, 6, 8, 10], document.body);
+  const schema = await f`Return a description of the structure of an object. Handle null and undefined objects`;
+
+  console.log("schema code", schema.toString());
+
+  const schemeDescription = schema(news);
+
+  console.log("schema data", schemeDescription);
+
+  const addSpaceList = await f`Using the data defined in <output> create a UI that will best display the space flight information. The developer will provide the data as a parameter and it will be in the format defined in <output>.
+    
+  <output>${schemeDescription}</output>`;
+
+  console.log("addSpaceList code", addSpaceList);
+
+  document.body.appendChild(addSpaceList(news));
 
 </script>
