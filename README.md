@@ -19,7 +19,7 @@ import { signal, effect } from "@preact/signals-core";
 
 const name = signal("Paul");
 
-const response = await prompt`Say "Hello ${name}".`;
+const response = prompt`Say "Hello ${name}".`;
 
 effect(async () => {
   console.log(await response.value);
@@ -38,7 +38,7 @@ import { signal, effect } from "@preact/signals-core";
 
 const nameSignal = signal("Paul Kinlan");
 
-const prompterSignal = await prompt`Using "${nameSignal}", extract the following data:
+const prompterSignal = prompt`Using "${nameSignal}", extract the following data:
 
 + First name
 + Surname
@@ -47,7 +47,7 @@ const prompterSignal = await prompt`Using "${nameSignal}", extract the following
 Return as valid JSON
 "`;
 
-const uiBuilderSignal = await prompt`You are an expert web developer, and you have been tasked with creating a form for a client. The form should have the following fields: "${prompterSignal}".
+const uiBuilderSignal = prompt`You are an expert web developer, and you have been tasked with creating a form for a client. The form should have the following fields: "${prompterSignal}".
 
 Return the required HTML for the form only and populate the default values.`;
 
@@ -73,7 +73,7 @@ const name = signal("Paul");
 const config = new ChromePromptConfiguration();
 config.temperature = 0.5;
 config.topK = 10;
-const response = await prompt`${config}Say "hello ${name}".`;
+const response = prompt`${config}Say "hello ${name}".`;
 
 effect(async () => {
   console.log(await response.value);
@@ -107,7 +107,7 @@ const name = signal("Paul");
 
 const config = new GeminiPromptConfiguration();
 config.key = window.prompt("API Key");
-const response = await prompt`${config}Just say the words "hello ${name}".`;
+const response = prompt`${config}Just say the words "hello ${name}".`;
 
 effect(async () => {
   console.log(await response.value);
@@ -132,7 +132,7 @@ const name = signal("Paul");
 
 const config = new OpenAIPromptConfiguration();
 config.key = window.prompt("API Key");
-const response = await prompt`${config}Just say the words "hello ${name}".`;
+const response = prompt`${config}Just say the words "hello ${name}".`;
 
 effect(async () => {
   console.log(await response.value);
@@ -156,7 +156,7 @@ import { signal, effect } from "@preact/signals-core";
 const name = signal("Paul");
 
 const config = new OllamaPromptConfiguration();
-const response = await prompt`${config}Just say the words "hello ${name}".`;
+const response = prompt`${config}Just say the words "hello ${name}".`;
 
 effect(async () => {
   console.log(await response.value);
