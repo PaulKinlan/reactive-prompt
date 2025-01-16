@@ -19,6 +19,7 @@ export default defineConfig({
       entry: {
         index: resolve(__dirname, "lib/index.js"),
         openai: resolve(__dirname, "lib/openai.js"),
+        claude: resolve(__dirname, "lib/claude.js"),
         chrome: resolve(__dirname, "lib/chrome.js"),
         gemini: resolve(__dirname, "lib/gemini.js"),
         ollama: resolve(__dirname, "lib/ollama.js"),

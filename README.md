@@ -116,6 +116,31 @@ effect(async () => {
 setTimeout(() => (name.value = "Serene"), 3000);
 ```
 
+## Using the Claude API
+
+You can now do text completion against Claude. Import the Claude module
+and use the same `prompt` function. This function requires a mandatory instance of `ClaudePromptConfiguration` with your Claude API key.
+
+```JavaScript
+import {
+  prompt,
+  ClaudePromptConfiguration,
+} from "@paulkinlan/reactive-prompt/claude";
+import { signal, effect } from "@preact/signals-core";
+
+const name = signal("Paul");
+
+const config = new ClaudePromptConfiguration();
+config.key = window.prompt("API Key");
+const response = prompt`${config}Just say the words "hello ${name}".`;
+
+effect(async () => {
+  console.log(await response.value);
+});
+
+setTimeout(() => (name.value = "Serene"), 3000);
+```
+
 ## Using the OpenAI API
 
 You can now do text completion against OpenAI. Import the OpenAI module

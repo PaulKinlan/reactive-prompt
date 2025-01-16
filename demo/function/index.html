@@ -147,17 +147,17 @@ You need to solve the following problem: ${promptSignal}`;
   //console.log("addList code", addList);
   //await addList([2, 4, 6, 8, 10], document.body);
 
-  const schema = await f`Return a JSON Schema for a given object. The schema should be in the format defined in https://json-schema.org/understanding-json-schema/reference/object.html and should include all the properties of the object. The schema should include the type of the property, the format of the property, the required status of the property, and the description of the property. The schema should include all the properties of the object. The schema should include the type of the property, the format of the property, the required status of the property, and the description of the property.`;
+  // const schema = await f`Return a JSON Schema for a given object. The schema should be in the format defined in https://json-schema.org/understanding-json-schema/reference/object.html and should include all the properties of the object. The schema should include the type of the property, the format of the property, the required status of the property, and the description of the property. The schema should include all the properties of the object. The schema should include the type of the property, the format of the property, the required status of the property, and the description of the property.`;
 
-  console.log("schema code", schema.toString());
+  // console.log("schema code", schema.toString());
 
-  const schemeDescription = schema(news);
+  // const schemeDescription = schema(news);
 
-  console.log("schema data", schemeDescription);
+  // console.log("schema data", schemeDescription);
 
   const addSpaceList = await f`Using the data defined in <output> create a UI that will best display the space flight information. The developer will provide the data as a parameter and it will be in the format defined in <output>.
     
-  <output>${JSON.stringify(schemeDescription)}</output>`;
+  <output>${JSON.stringify(news)}</output>`;
 
   console.log("addSpaceList code", addSpaceList);
 
