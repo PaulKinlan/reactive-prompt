@@ -1,10 +1,12 @@
 <script type="module">
   import {
     prompt,
-    ChromePromptConfiguration,
-  } from "@paulkinlan/reactive-prompt/chrome";
+    OllamaPromptConfiguration
+  } from "@paulkinlan/reactive-prompt/ollama";
   import { isSignal } from "@paulkinlan/reactive-prompt"
   import { signal, computed, effect } from "@preact/signals-core";
+
+  const config = new OllamaPromptConfiguration({ model: "codellama:13b", debug: true });
 
   function accumulate(strings, values) {
     const returnSignal = signal();
@@ -31,34 +33,47 @@
       strings,
       values);
     const returnSignal = signal();
-    const genFunc = prompt`You are an advanced software engineer. Generate a valid function using only valid JavaScript that will solve the following problem: ${promptSignal}. 
+    const genFunc = prompt`${config} You are an expert JavaScript developer. 
       
-You MUST follow these rules:
+You MUST always follow these rules:
++ Return a single function.
++ Constants in the prompt must be used in the function
++ NEVER assume structure of data unless provided in the prompt.
++ NEVER assume any constants without them being explicitly provided in the prompt.
++ NEVER assume an API key is required unless the prompt includes it.
 + Your target platform is the Web Browser.
 + You can use any browser APIs.
 + NEVER try to mutate state outside of the function.
-+ You MUST return a value from the function.
 + When the user asks for a UI the developer create a root element and return that to the user
-+ ALWAYS implement all the logic. NEVER leave anything to be implemented later (i.e, no TODOs).
++ ALWAYS implement all the logic. NEVER leave anything to be implemented later
 + ALWAYS use modern JS features (ES6+), e.g fetch etc.
-+ NEVER include any comments in the function.
++ NEVER use async/await, generate code that uses .then() chaining.
++ NEVER include comments.
++ NEVER include explanations.
 + NEVER use a library e.g. React, Lodash, etc.
-+ NEVER "require" any libraries.
-+ NEVER import any libraries (e.g. lodash, moment, React etc).
++ NEVER "require()" any libraries.
 + NEVER use TypeScript. 
 + NEVER use NodeJS APIs. 
-+ NEVER use Deno specific APIs.
-+ NEVER use any sample data in the function. Expect the user to provide it.
-+ ONLY return a SINGLE function using traditional function format, i.e 'function test() { return 1; }'. 
-+ NEVER use arrow functions.
++ NEVER use Deno specific APIs. 
++ NEVER use arrow or lambda syntax for functions
 + NEVER assign the function to a variable.
-+ NEVER return anything other than the function, e.g, no examples, no console.log`;
+
+EXAMPLE:
++ PASS: "Uppercase a string" = function uppercase(a) { return a.toUpperCase(); }
++ FAIL: "Uppercase a string" = const uppercase = (a) => a.toUpperCase();
++ FAIL: "Uppercase a string" = function uppercase(a) { return a.toUpperCase(); } You can call this function by calling uppercase("hello")
++ FAIL: "Uppercase a string" = function uppercase(a) { return a.toUpperCase(); } uppercase("hello")
+
+You need to solve the following problem: ${promptSignal}`;
 
     const parseJS = (js) => {
-      const codeExtractRegExp = /```JavaScript(.*?)```/ims;
+      const codeExtractRegExp = /```(\n|js|JavaScript\n)(.*?)```/ims;
       const results = codeExtractRegExp.exec(js);
       if (results && results.length > 0) {
-        return results[1].replace(/^\nfunction/, "function");
+        return results[2].replace(/^\nfunction/, "function");
+      }
+      else if (js.startsWith("\nfunction") || js.startsWith("function")) {
+        return js;
       }
 
       return;
@@ -99,10 +114,10 @@ You MUST follow these rules:
         }
 
         try {
-          const js = stripTypesFromFunctionDeclaration(parseJS(functionScript));
+          const js = stripTypesFromFunctionDeclaration(parseJS(functionScript.trim()));
 
           if (js) {
-            const func = eval(`(() => { "use strict"; return function() { return ${js}; }() })()`);
+            const func = eval(`(() => { "use strict"; return function () { return ${js}; }() })()`);
             resolve(func);
           }
         }
@@ -115,7 +130,7 @@ You MUST follow these rules:
 
   const sum = await f`sum two numbers`;
   const isOdd = await f`is a number odd`;
-  const fetchNews = await f`fetch data from https://api.spaceflightnewsapi.net/v4/articles/ and return JSON`;
+  const fetchNews = await f`fetch JSON from https://api.spaceflightnewsapi.net/v4/articles/`;
   //const addList = await f`Create a UI that allows you to add items to a list and remove items from a list. The developer can provide a list of items. The list should be displayed on the screen attached to a DOM element that I will specify. The list should be displayed in a vertical list. The list should be displayed in the order that the items were added. The list should have a remove button next to each item that when clicked will remove the item from the list. The list should have an input field and a button that when clicked will add the item to the list. The input field should be cleared after the item is added to the list.`;
 
   console.log("Sum code", sum);
@@ -132,7 +147,7 @@ You MUST follow these rules:
   //console.log("addList code", addList);
   //await addList([2, 4, 6, 8, 10], document.body);
 
-  const schema = await f`Return a description of the structure of an object. Handle null and undefined objects`;
+  const schema = await f`Return a JSON Schema for a given object. The schema should be in the format defined in https://json-schema.org/understanding-json-schema/reference/object.html and should include all the properties of the object. The schema should include the type of the property, the format of the property, the required status of the property, and the description of the property. The schema should include all the properties of the object. The schema should include the type of the property, the format of the property, the required status of the property, and the description of the property.`;
 
   console.log("schema code", schema.toString());
 
@@ -142,7 +157,7 @@ You MUST follow these rules:
 
   const addSpaceList = await f`Using the data defined in <output> create a UI that will best display the space flight information. The developer will provide the data as a parameter and it will be in the format defined in <output>.
     
-  <output>${schemeDescription}</output>`;
+  <output>${JSON.stringify(schemeDescription)}</output>`;
 
   console.log("addSpaceList code", addSpaceList);
 
