@@ -19,8 +19,8 @@ setTimeout(() => {
   name.value = "Serene";
 }, 3000);
 
-effect(() => {
-  console.log(response.value);
+effect(async () => {
+  console.log(await response.value);
 });
 
 </pre>
