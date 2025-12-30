@@ -1,23 +1,37 @@
-<script type="module">
-  import {
-    prompt,
-    GeminiPromptConfiguration,
-  } from "@paulkinlan/reactive-prompt/gemini";
-  import { signal, effect } from "@preact/signals-core";
+<!DOCTYPE html>
+<html>
 
-  const name = signal("Paul");
-  const config = new GeminiPromptConfiguration();
-  config.key = window.prompt("API Key");
-  if (config.key == null) {
-    console.log("No API key provided");
-    
-  }
-  const response =
-    await prompt`${config}Repeat the following words: "hello ${name}".`;
+<head>
+    <title>Gemini Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
 
-  effect(async () => {
-    console.log(await response.value);
-  });
+<body>
+    <h1>This demo shows the basics of how to use reactive-prompt with Gemini</h1>
+    <p>Enter your Gemini API key and click the button to run a prompt and see the response.</p>
+    <p>Expected: Output "hello Paul", then 3 seconds later output "hello Serene".</p>
+    <pre>const name = signal("Paul");
+const config = new GeminiPromptConfiguration();
+config.key = "YOUR_API_KEY";
+const response = prompt`${config}Repeat the following words: "hello ${name}".`;
 
-  setTimeout(() => (name.value = "Serene"), 3000);
-</script>
+setTimeout(() => {
+  name.value = "Serene";
+}, 3000);
+
+effect(async () => {
+  console.log(await response.value);
+});
+
+</pre>
+    <form id="apiKeyForm">
+        <label for="apiKey">Gemini API Key:</label>
+        <input type="password" id="apiKey" name="apiKey" size="50" placeholder="Enter your API key" required>
+        <button type="submit" id="go">Go</button>
+    </form>
+    <h2>Log</h2>
+    <pre id="logPre"></pre>
+    <script src="index.js" type="module"></script>
+</body>
+
+</html>
