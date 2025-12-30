@@ -1,1 +1,31 @@
-<script src="index.js" type="module"></script>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Basic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <h1>This demo shows the basics of how to use reactive-prompt</h1>
+    <p>Click the button to run a prompt and see the response.</p>
+    <p>Expected: Output "hello Paul", then 500ms later output "hello Serene".</p>
+    <pre>const name = signal("Paul");
+const response = prompt`Say "hello ${name}".`;
+
+setTimeout(() => {
+  name.value = "Serene";
+}, 500);
+
+effect(() => {
+  console.log(response.value);
+});
+
+</pre>
+    <button id="go">Go</button>
+    <h2>Log</h2>
+    <pre id="logPre"></pre>
+    <script src="index.js" type="module"></script>
+</body>
+
+</html>
