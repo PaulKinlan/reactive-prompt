@@ -84,12 +84,12 @@ setTimeout(() => (name.value = "Serene"), 3000);
 
 ## Chrome's experimental prompt API
 
-This library relies on Chrome's experiemental prompt API.
+This library relies on Chrome's experimental prompt API.
 
 To use this, you need at least Chrome 127 (Dev Channel) and to enable the following flags.
 
-- chrome://flags/#prompt-api-for-gemini-nano
-- chrome://flags/#optimization-guide-on-device-model "Enable Bypass"
+- chrome://flags/#prompt-api-for-gemini-nano-multimodal-input
+- chrome://flags/#optimization-guide-on-device-model
 
 ## Using the Gemini API
 
